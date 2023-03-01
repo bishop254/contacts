@@ -1,5 +1,4 @@
 <div class="grid-container">
-  <h1 class="mat-h1">Dashboard</h1>
   <div class="btn-row">
     <div class="btn-group pull-right">
       <button
@@ -23,14 +22,24 @@
       </button>
     </div>
 
+    <mat-form-field class="example-form-field">
+      <mat-label>Search...</mat-label>
+      <input
+        matInput
+        type="text"
+        [(ngModel)]="value"
+        (keyup)="searchContact()"
+      />
+    </mat-form-field>
+
     <button mat-raised-button color="primary" (click)="openModal()">
       Add Contact
     </button>
   </div>
-  <mat-grid-list cols="1" rowHeight="350px" *ngIf="displayMode == 1">
+  <mat-grid-list cols="3" rowHeight="350px" *ngIf="displayMode == 1">
     <mat-grid-tile
       *ngFor="let user of userContacts"
-      [colspan]="1"
+      [colspan]="isMobile ? 3 : 1"
       [rowspan]="1"
     >
       <mat-card class="dashboard-card">
@@ -48,22 +57,60 @@
             <mat-menu #menu="matMenu" xPosition="before">
               <button mat-menu-item (click)="editContact(user)">Edit</button>
               <button mat-menu-item (click)="deleteContact(user)">
-                Remove
+                Delete
               </button>
             </mat-menu>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <div>Card Content Here</div>
+        <mat-card-content
+          class="dashboard-card-content"
+          (click)="viewContact(user)"
+        >
+          <div>
+            <h2>Last Name:</h2>
+            <h3>{{ user["lastname"] }}</h3>
+          </div>
+          <div>
+            <h2>Email:</h2>
+            <h3>{{ user["email"] }}</h3>
+          </div>
+          <div>
+            <h2>Mobile:</h2>
+            <h3>{{ user["mobile"] }}</h3>
+          </div>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
     <h2 *ngIf="userContacts.length == 0">No Contacts Added...</h2>
   </mat-grid-list>
 
-  <mat-selection-list *ngIf="displayMode == 2">
-    <mat-list-option *ngFor="let user of userContacts">
-      {{ user["firstname"] }}
-    </mat-list-option>
-  </mat-selection-list>
+  <ng-container *ngIf="displayMode == 2">
+    <button
+      mat-raised-button
+      color="accent"
+      type="button"
+      (click)="deleteContact()"
+    >
+      Delete Contact(s)
+    </button>
+
+    <ng-container *ngFor="let user of userContacts">
+      <div class="contact-list">
+        <h2 (click)="viewContact(user)">
+          {{ user["firstname"] }} {{ user["lastname"] }}
+        </h2>
+
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="edit"
+          (click)="editContact(user)"
+        ></mat-icon>
+
+        <mat-selection-list #contacts>
+          <mat-list-option [value]="user['mobile']"> </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </ng-container>
+  </ng-container>
 </div>
