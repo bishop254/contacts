@@ -1,0 +1,69 @@
+<div class="grid-container">
+  <h1 class="mat-h1">Dashboard</h1>
+  <div class="btn-row">
+    <div class="btn-group pull-right">
+      <button
+        mat-raised-button
+        color="secondary"
+        type="button"
+        (click)="onDisplayModeChange(1)"
+        [ngClass]="{ 'btn-primary active': displayMode === 1 }"
+      >
+        Grid
+      </button>
+
+      <button
+        mat-raised-button
+        color="secondary"
+        type="button"
+        (click)="onDisplayModeChange(2)"
+        [ngClass]="{ 'btn-primary active': displayMode === 2 }"
+      >
+        List
+      </button>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="openModal()">
+      Add Contact
+    </button>
+  </div>
+  <mat-grid-list cols="1" rowHeight="350px" *ngIf="displayMode == 1">
+    <mat-grid-tile
+      *ngFor="let user of userContacts"
+      [colspan]="1"
+      [rowspan]="1"
+    >
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            {{ user["firstname"] }}
+            <button
+              mat-icon-button
+              class="more-button"
+              [matMenuTriggerFor]="menu"
+              aria-label="Toggle menu"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item (click)="editContact(user)">Edit</button>
+              <button mat-menu-item (click)="deleteContact(user)">
+                Remove
+              </button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div>Card Content Here</div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <h2 *ngIf="userContacts.length == 0">No Contacts Added...</h2>
+  </mat-grid-list>
+
+  <mat-selection-list *ngIf="displayMode == 2">
+    <mat-list-option *ngFor="let user of userContacts">
+      {{ user["firstname"] }}
+    </mat-list-option>
+  </mat-selection-list>
+</div>
