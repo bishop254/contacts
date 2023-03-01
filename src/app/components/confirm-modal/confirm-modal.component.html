@@ -1,0 +1,13 @@
+<mat-card class="dashboard-card">
+  <mat-card-header>
+    <mat-card-title>
+      You are about to perform a delete operation.
+      <br>
+      <b style="color: red;"> Continue?</b>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="dashboard-card-content">
+    <button mat-raised-button color="secondary" type="button" (click)="closeModal(0)">No</button>
+    <button mat-raised-button color="secondary" type="button" (click)="closeModal(1)">Yes</button>
+  </mat-card-content>
+</mat-card>
