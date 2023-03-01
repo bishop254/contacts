@@ -22,6 +22,6 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     let em: string = this.addressForm.controls['email'].value!;
     let pass: string = this.addressForm.controls['password'].value!;
-    this.auth.SignUp(em, pass);
+    this.auth.SignIn(em, pass);
   }
 }
