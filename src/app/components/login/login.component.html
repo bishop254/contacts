@@ -35,7 +35,8 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit">Submit</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!addressForm.valid">Login</button>
     </mat-card-actions>
+    <p>Not Registered? <a routerLink="/sign-up">Click here to register</a></p>
   </mat-card>
 </form>
