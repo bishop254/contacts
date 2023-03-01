@@ -8,28 +8,22 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
-interface Person {
-  name: string;
-  age: number;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class FirebaseService {
   userData: any;
   contactsArray: Record<string, string>[] = [];
-  email: string = JSON.parse(localStorage.getItem('userData')!)['email'];
-  me: Person = {
-    name: 'Kar',
-    age: 10,
-  };
+  email: string = '';
 
   private contactsSource = new BehaviorSubject<any>([]);
   public contactsData$ = this.contactsSource.asObservable();
 
   constructor(private router: Router, private snackBar: MatSnackBar) {
     firebase.initializeApp(environment.firebase);
+    this.email = localStorage.getItem('userData')
+      ? JSON.parse(localStorage.getItem('userData')!)['email']
+      : '';
   }
 
   async SignIn(email: string, password: string) {
@@ -52,6 +46,7 @@ export class FirebaseService {
       );
 
       this.userData = loginAction.user;
+      this.email = this.userData['email'];
     } catch (error) {
       this.snackBar.open('Login Failure/Invalid credentials', 'Failure', {
         duration: 2 * 1000,
@@ -68,8 +63,6 @@ export class FirebaseService {
         .auth()
         .createUserWithEmailAndPassword(email, password);
 
-      console.log(registerResp);
-
       this.router.navigate(['/sign-in']);
 
       this.snackBar.open('Registration Success', 'Success', {
@@ -85,13 +78,16 @@ export class FirebaseService {
     }
   }
 
-  get isLoggedIn() {
-    let token = localStorage.getItem('token');
-    if (token !== undefined && token !== '' && token !== null) {
-      return true;
-    } else {
-      return false;
-    }
+  get isLoggedIn(): boolean {
+    const user = JSON.parse(localStorage.getItem('userData')!);
+    return user !== null ? true : false;
+  }
+
+  logout() {
+    localStorage.clear();
+    this.email = '';
+    this.userData = null;
+    this.router.navigate(['/login']);
   }
 
   private updateContactsData(data: any) {
@@ -103,7 +99,6 @@ export class FirebaseService {
     const querySnapshot = await getResp.get();
     querySnapshot.forEach((doc) => {
       if (doc.id == this.email) {
-        console.log(doc.id, '=>', doc.data());
         let tempArr = doc.data()['conts'] || [];
         this.contactsArray = [...(tempArr as [])];
         this.updateContactsData(doc.data()['conts']);
@@ -130,7 +125,8 @@ export class FirebaseService {
       .doc(this.email);
 
     let tempArrx = this.contactsArray.filter(
-      (contact) => contact['firstname'].toLowerCase() == user['firstname'].toLowerCase()
+      (contact) =>
+        contact['firstname'].toLowerCase() == user['firstname'].toLowerCase()
     );
 
     let tempArry = this.contactsArray.filter(
@@ -144,12 +140,61 @@ export class FirebaseService {
     } else {
       let tempArr = [...this.contactsArray, user];
       await saveResp.set({ conts: tempArr });
+      this.getContacts();
       this.snackBar.open('Contact saved', 'Success', {
         duration: 2 * 1000,
       });
-
-      this.getContacts();
     }
-    console.log(this.contactsArray, tempArrx);
+  }
+
+  async updateContact(
+    firstname: string,
+    lastname: string,
+    email: string,
+    mobile: string,
+    oldMobile: string
+  ) {
+    const user = {
+      firstname,
+      lastname,
+      email,
+      mobile,
+    };
+
+    let saveResp = await firebase
+      .firestore()
+      .collection('users')
+      .doc(this.email);
+
+    this.contactsArray.map((contact, index) => {
+      if (contact['mobile'] == oldMobile) {
+        this.contactsArray.splice(index, 1, user);
+      }
+    });
+
+    await saveResp.set({ conts: this.contactsArray });
+    this.getContacts();
+    this.snackBar.open('Contact updated', 'Success', {
+      duration: 2 * 1000,
+    });
+  }
+
+  async deleteContact(user: Record<string, string>) {
+    let saveResp = await firebase
+      .firestore()
+      .collection('users')
+      .doc(this.email);
+
+    this.contactsArray.map((contact, index) => {
+      if (contact['mobile'] == user['mobile']) {
+        this.contactsArray.splice(index, 1);
+      }
+    });
+
+    await saveResp.set({ conts: this.contactsArray });
+    this.getContacts();
+    this.snackBar.open('Contact deleted', 'Success', {
+      duration: 2 * 1000,
+    });
   }
 }
