@@ -17,13 +17,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent } from './components/home/home.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FirebaseService } from './services/firebase.service';
 import { ModalComponent } from './components/modal/modal.component';
+import { ViewContactComponent } from './components/view-contact/view-contact.component';
+import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { ModalComponent } from './components/modal/modal.component';
     RegisterComponent,
     HomeComponent,
     ModalComponent,
+    ViewContactComponent,
+    ConfirmModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,7 +56,8 @@ import { ModalComponent } from './components/modal/modal.component';
     MatGridListModule,
     MatMenuModule,
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
+    FormsModule,
   ],
   providers: [FirebaseService],
   bootstrap: [AppComponent],
